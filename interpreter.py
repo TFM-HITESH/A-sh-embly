@@ -79,6 +79,11 @@ for line in programLines:
         jumpGtLabel = lineParts[1]
         programTokens.append(jumpGtLabel)
         tokenCounter += 1
+    elif (opcode == "JUMP.LT.0"):
+        # Expecting a label to go to now. Append it to programTokens
+        jumpLtLabel = lineParts[1]
+        programTokens.append(jumpLtLabel)
+        tokenCounter += 1
 
 # We have successfully tokenized the program along with handling labels 
 # print(programTokens)
@@ -88,4 +93,111 @@ for line in programLines:
 ##############################################################################################################################
 #                                       Creating the Stack for program execution                                             #
 ##############################################################################################################################
+
+# Regular DSA stack implementation
+class Stack:
+    def __init__(self, size):
+        self.stackPointer = -1
+        self.stackArr = [0 for ele in range(size)]
+
+    def push(self, num):
+        self.stackPointer += 1
+        self.stackArr[self.stackPointer] = num
+
+    def pop(self):
+        num = self.stackArr[self.stackPointer]
+        self.stackPointer -= 1
+        return num
+    
+    def top(self):
+        return self.stackArr[self.stackPointer]
+        
+
+##############################################################################################################################
+#                                    Creating the Interpreter for program execution                                          #
+##############################################################################################################################
+
+# Stack of size 256 for our program
+programStack = Stack(256)
+# Program counter keeps track of next instruction
+programCounter = 0
+
+# Keep running the program unless and until HALT is encountered
+while(programTokens[programCounter] != "HALT"):
+    # Getting current instruction
+    currentOpcode = programTokens[programCounter]
+    programCounter += 1
+
+    # The next token would be the number. To push that into our stack
+    if(currentOpcode == "PUSH"):
+        number = programTokens[programCounter]
+        programStack.push(num=number)
+        # Skip the next token (number)
+        programCounter += 1
+    # To pop from the top of Stack
+    elif(currentOpcode == "POP"):
+        number = programStack.pop()
+    # For adding, pop the top 2 numbers and then add and push them into stack
+    elif(currentOpcode == "ADD"):
+        num1 = programStack.pop()
+        num2 = programStack.pop()
+        programStack.push(int(num2) + int(num1))
+    # For subtracting, pop the top 2 numbers and then subtract and push them into stack
+    elif(currentOpcode == "SUB"):
+        num1 = programStack.pop()
+        num2 = programStack.pop()
+        programStack.push(int(num2) - int(num1))
+    # For multiplying, pop the top 2 numbers and then multiply and push them into stack
+    elif(currentOpcode == "MUL"):
+        num1 = programStack.pop()
+        num2 = programStack.pop()
+        programStack.push(int(num2) * int(num1))
+    # For diividing, pop the top 2 numbers and then divide and push them into stack
+    elif(currentOpcode == "DIV"):
+        num1 = programStack.pop()
+        num2 = programStack.pop()
+        programStack.push(int(int(num2) / int(num1)))
+    # Display the string literal on screen
+    elif(currentOpcode == "PRINT"):
+        stringLiteral = programTokens[programCounter]
+        print(stringLiteral)
+        # Skip the next token (string literal)
+        programCounter += 1
+    # Read a number from the user and put it on top of stack
+    elif(currentOpcode == "READ"):
+        number = int(input())
+        programStack.push(number)
+    # Check if equal to 0 and jump if needed
+    elif(currentOpcode == "JUMP.EQ.0"):
+        number = programStack.top() # Check if 0 or not
+        if (number == 0):
+            programCounter = labelTracker[programTokens[programCounter]]
+            # The program counter shifts to the location pointed to by the label in the dictionary
+            # programTokens[programCounter] gives us the label name
+            # labelTracker[labelName] in the dict gives us the new label program counter location
+        else:
+            # Otherwise, just skip the next token (label to jump to)
+            programCounter += 1
+    elif(currentOpcode == "JUMP.GT.0"):
+        number = programStack.top() # Check if >0 or not
+        if (number > 0):
+            programCounter = labelTracker[programTokens[programCounter]]
+            # The program counter shifts to the location pointed to by the label in the dictionary
+            # programTokens[programCounter] gives us the label name
+            # labelTracker[labelName] in the dict gives us the new label program counter location
+        else:
+            # Otherwise, just skip the next token (label to jump to)
+            programCounter += 1
+    elif(currentOpcode == "JUMP.LT.0"):
+        number = programStack.top() # Check if >0 or not
+        if (number < 0):
+            programCounter = labelTracker[programTokens[programCounter]]
+            # The program counter shifts to the location pointed to by the label in the dictionary
+            # programTokens[programCounter] gives us the label name
+            # labelTracker[labelName] in the dict gives us the new label program counter location
+        else:
+            # Otherwise, just skip the next token (label to jump to)
+            programCounter += 1
+
+
 
