@@ -14,3 +14,28 @@ JUMP.GT.0
 JUMP.LT.0
 
 HALT
+
+----
+
+To be implemented : 
+. . .
+(Split by . and convert last string to number for comparision)
+JUMP.EQ/GT/LT.n
+JUMP.GE.n (Greater or Equal to >=)
+JUMP.LE.n (Less or Equal to <=)
+. . . 
+CLR (clears the stack and makes everything 0)
+. . .
+(Create a full symbol table - 4 tables - Int, Double, String, Boolean)
+VAR (declare a variable)
+VAR a = 10
+
+Normally, automatic type inferring.
+Else
+VAR a:int = 10
+VAR b:double = 30.00
+VAR c:string = "hello"
+VAR d:bool = true
+. . .
+
+
